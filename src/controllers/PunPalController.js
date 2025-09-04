@@ -1,7 +1,7 @@
 import { JokeService } from '../services/JokeService.js';
 import { SharingService } from '../services/SharingService.js';
 import { User } from '../models/User.js';
-import { LocalStorageManager, EventEmitter, PerformanceTracker, generateUUID } from '../utils/helpers.js';
+import { LocalStorageManager, EventEmitter, PerformanceTracker } from '../utils/helpers.js';
 
 /**
  * Main application controller for PunPal
@@ -432,8 +432,8 @@ export class PunPalController {
       if (userData) {
         this.currentUser = User.fromJSON(userData);
       } else {
-        // Create new user
-        const userId = generateUUID();
+        // Create new user with timestamp-based ID for uniqueness
+        const userId = `user_${Date.now()}_${process.pid || 0}`;
         this.currentUser = new User(userId, {
           safetyLevel: 'family-friendly',
           categories: [],

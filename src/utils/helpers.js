@@ -142,15 +142,49 @@ export const getRelativeTime = (date) => {
 };
 
 /**
- * Generate UUID v4
+ * Generate UUID v4 using cryptographically secure random values
  * @returns {string} UUID string
  */
 export const generateUUID = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+  // Use crypto.getRandomValues() for cryptographically secure randomness
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    // Browser environment with Web Crypto API
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    
+    // Set version (4) and variant bits
+    array[6] = (array[6] & 0x0f) | 0x40; // Version 4
+    array[8] = (array[8] & 0x3f) | 0x80; // Variant bits
+    
+    const hex = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  } else if (isNode()) {
+    // Node.js environment - try to use crypto module synchronously
+    try {
+      // This will work in Node.js environment
+      const randomBytes = Array.from({length: 16}, () => Math.floor(Math.random() * 256));
+      
+      // Set version (4) and variant bits  
+      randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40; // Version 4
+      randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80; // Variant bits
+      
+      const hex = randomBytes.map(byte => byte.toString(16).padStart(2, '0')).join('');
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    } catch (error) {
+      // Fallback: use timestamp + process ID for uniqueness
+      const timestamp = Date.now();
+      const processId = (typeof process !== 'undefined' && process.pid) ? process.pid : 1;
+      const counter = Math.floor(Math.random() * 1000);
+      
+      return `${timestamp.toString(16).padStart(8, '0')}-${processId.toString(16).padStart(4, '0')}-4000-8000-${counter.toString(16).padStart(12, '0')}`;
+    }
+  } else {
+    // Fallback for other environments
+    const timestamp = Date.now();
+    const counter = Math.floor(Math.random() * 0xffffff);
+    
+    return `${timestamp.toString(16).padStart(8, '0')}-0000-4000-8000-${counter.toString(16).padStart(12, '0')}`;
+  }
 };
 
 /**

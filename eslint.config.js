@@ -19,7 +19,8 @@ export default [
         localStorage: "readonly",
         btoa: "readonly",
         atob: "readonly",
-        structuredClone: "readonly"
+        structuredClone: "readonly",
+        crypto: "readonly"
       }
     },
     rules: {

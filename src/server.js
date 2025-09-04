@@ -336,6 +336,10 @@ class PunPalServer {
     this.app.get('/joke', (req, res) => {
       const { joke_id } = req.query;
       
+      // Sanitize the joke_id parameter to prevent XSS
+      const safeJokeId = joke_id ? parseInt(joke_id, 10) : null;
+      const isValidJokeId = safeJokeId && !isNaN(safeJokeId) && safeJokeId > 0;
+      
       res.send(`
         <!DOCTYPE html>
         <html lang="en">
@@ -398,7 +402,7 @@ class PunPalServer {
           
           <div class="joke-container">
             <div id="joke-content">
-              ${joke_id ? `Loading joke #${joke_id}...` : "Why don't scientists trust atoms? Because they make up everything!"}
+              ${isValidJokeId ? `Loading joke #${safeJokeId}...` : "Why don't scientists trust atoms? Because they make up everything!"}
             </div>
           </div>
           
@@ -421,8 +425,8 @@ class PunPalServer {
                 const params = new URLSearchParams(window.location.search);
                 const jokeId = params.get('joke_id');
                 
-                if (jokeId) {
-                  const response = await fetch(\`/api/joke/\${jokeId}\`);
+                if (jokeId && /^\\d+$/.test(jokeId)) {
+                  const response = await fetch(\`/api/joke/\${parseInt(jokeId, 10)}\`);
                   const result = await response.json();
                   
                   if (result.success) {
