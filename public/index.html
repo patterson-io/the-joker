@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PunPal - Your Daily Dad Joke Companion</title>
+    <meta name="description" content="Get your daily dose of groan-worthy dad jokes with PunPal - the ultimate dad joke companion app">
+    <meta name="keywords" content="dad jokes, humor, comedy, jokes, daily jokes, funny">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="PunPal - Your Daily Dad Joke Companion">
+    <meta property="og:description" content="Get your daily dose of groan-worthy dad jokes">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://punpal.app">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 4em;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .joke-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .joke-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .joke-text {
+            font-size: 1.8em;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joke-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.primary {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .btn.favorite {
+            background: rgba(255, 100, 100, 0.3);
+        }
+
+        .btn.favorite.active {
+            background: rgba(255, 100, 100, 0.6);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1em;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .share-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 215, 0, 0.9);
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            max-width: 300px;
+        }
+
+        .achievement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .achievement-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .joke-card {
+                padding: 20px;
+            }
+            
+            .joke-text {
+                font-size: 1.4em;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        .error-message {
+            background: rgba(255, 100, 100, 0.2);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 0;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">🎭</div>
+            <h1>PunPal</h1>
+            <p class="tagline">Your Daily Dad Joke Companion</p>
+        </header>
+
+        <main>
+            <!-- Search Section -->
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for jokes...">
+                <button class="btn" onclick="searchJokes()">🔍 Search</button>
+            </div>
+
+            <!-- Main Joke Display -->
+            <div class="joke-card">
+                <div class="joke-text" id="jokeText">
+                    Loading your daily dose of dad humor...
+                </div>
+                <div class="joke-meta" id="jokeMeta">
+                    <span id="jokeCategory"></span>
+                    <span id="jokeSource"></span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn primary" onclick="getDailyJoke()">📅 Daily Joke</button>
+                <button class="btn" onclick="getRandomJoke()">🎲 Random</button>
+                <button class="btn favorite" id="favoriteBtn" onclick="toggleFavorite()">💖 Favorite</button>
+                <button class="btn" onclick="shareJoke('copy')">📋 Copy</button>
+                <button class="btn" onclick="shareJoke('twitter')">🐦 Tweet</button>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="share-buttons">
+                <a href="#" class="share-btn" onclick="shareJoke('facebook')">📘 Facebook</a>
+                <a href="#" class="share-btn" onclick="shareJoke('whatsapp')">💬 WhatsApp</a>
+                <a href="#" class="share-btn" onclick="shareJoke('email')">📧 Email</a>
+            </div>
+
+            <!-- User Stats -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="dailyStreak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="jokesViewed">0</div>
+                    <div class="stat-label">Jokes Viewed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="favoritesCount">0</div>
+                    <div class="stat-label">Favorites</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="achievementsCount">0</div>
+                    <div class="stat-label">Achievements</div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 PunPal - Spreading Smiles One Dad Joke at a Time</p>
+            <p>Built with ❤️ and Modern JavaScript</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Achievement Popup -->
+    <div id="achievementPopup" class="achievement-popup">
+        <div class="achievement-icon">🏆</div>
+        <div id="achievementText">Achievement Unlocked!</div>
+    </div>
+
+    <script type="module">
+        import { PunPalApp } from './src/index.js';
+
+        class PunPalWebApp {
+            constructor() {
+                this.app = new PunPalApp();
+                this.controller = null;
+                this.currentJoke = null;
+                this.isLoading = false;
+            }
+
+            async initialize() {
+                try {
+                    this.showLoading(true);
+                    this.controller = await this.app.start();
+                    this.setupEventListeners();
+                    await this.loadDailyJoke();
+                    await this.updateStats();
+                    this.showLoading(false);
+                    
+                    this.showToast('Welcome to PunPal! 🎭');
+                } catch (error) {
+                    console.error('Failed to initialize:', error);
+                    this.showError('Failed to load PunPal. Please refresh the page.');
+                    this.showLoading(false);
+                }
+            }
+
+            setupEventListeners() {
+                // Search on Enter key
+                document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.searchJokes();
+                    }
+                });
+
+                // Achievement notifications
+                this.controller.on('joke:viewed', (joke) => {
+                    this.currentJoke = joke;
+                    this.updateJokeDisplay(joke);
+                    this.updateFavoriteButton();
+                });
+
+                this.controller.on('joke:favorited', () => {
+                    this.updateStats();
+                    this.updateFavoriteButton();
+                });
+
+                // Make functions globally available
+                window.getDailyJoke = () => this.getDailyJoke();
+                window.getRandomJoke = () => this.getRandomJoke();
+                window.searchJokes = () => this.searchJokes();
+                window.toggleFavorite = () => this.toggleFavorite();
+                window.shareJoke = (platform) => this.shareJoke(platform);
+            }
+
+            async loadDailyJoke() {
+                try {
+                    const joke = await this.controller.getDailyJoke();
+                    this.currentJoke = joke;
+                    this.updateJokeDisplay(joke);
+                    
+                    if (joke.achievements && joke.achievements.length > 0) {
+                        this.showAchievement(joke.achievements[0]);
+                    }
+                } catch (error) {
+                    this.showError('Failed to load daily joke');
+                }
+            }
+
+            async getDailyJoke() {
+                if (this.isLoading) return;
+                
+                try {
+                    this.showLoading(true);
+                    await this.loadDailyJoke();
+                    await this.updateStats();
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async getRandomJoke() {
+                if (this.isLoading) return;
+                
+                try {
+                    this.showLoading(true);
+                    const joke = await this.controller.getRandomJoke({ excludeCurrentJoke: true });
+                    this.currentJoke = joke;
+                    this.updateJokeDisplay(joke);
+                    await this.updateStats();
+                } catch (error) {
+                    this.showError('Failed to get random joke');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async searchJokes() {
+                const query = document.getElementById('searchInput').value.trim();
+                
+                if (!query) {
+                    this.showToast('Please enter a search term');
+                    return;
+                }
+
+                try {
+                    this.showLoading(true);
+                    const results = await this.controller.searchJokes(query);
+                    
+                    if (results.length === 0) {
+                        this.showToast('No jokes found for your search');
+                        return;
+                    }
+
+                    // Show first result
+                    this.currentJoke = results[0];
+                    this.updateJokeDisplay(results[0]);
+                    this.showToast(`Found ${results.length} jokes!`);
+                } catch (error) {
+                    this.showError('Search failed');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async toggleFavorite() {
+                if (!this.currentJoke) {
+                    this.showToast('No joke to favorite');
+                    return;
+                }
+
+                try {
+                    const isFavorited = await this.controller.toggleFavorite(this.currentJoke.id);
+                    this.showToast(isFavorited ? 'Added to favorites! 💖' : 'Removed from favorites');
+                    this.updateFavoriteButton();
+                } catch (error) {
+                    this.showError('Failed to update favorite');
+                }
+            }
+
+            async shareJoke(platform) {
+                if (!this.currentJoke) {
+                    this.showToast('No joke to share');
+                    return;
+                }
+
+                try {
+                    const result = await this.controller.shareJoke(platform);
+                    
+                    if (result.method === 'popup' && result.shareUrl) {
+                        window.open(result.shareUrl, '_blank', 'width=600,height=400');
+                    } else if (result.method === 'redirect' && result.shareUrl) {
+                        window.open(result.shareUrl, '_blank');
+                    } else if (result.method === 'clipboard') {
+                        this.showToast('Joke copied to clipboard! 📋');
+                    }
+                } catch (error) {
+                    this.showError('Share failed');
+                }
+            }
+
+            updateJokeDisplay(joke) {
+                document.getElementById('jokeText').textContent = joke.text;
+                document.getElementById('jokeCategory').textContent = `📂 ${joke.category}`;
+                document.getElementById('jokeSource').textContent = `📍 ${joke.source}`;
+            }
+
+            updateFavoriteButton() {
+                const btn = document.getElementById('favoriteBtn');
+                
+                if (this.currentJoke && this.controller.currentUser) {
+                    const isFavorited = this.controller.currentUser.stats.favoriteJokes.includes(this.currentJoke.id);
+                    btn.classList.toggle('active', isFavorited);
+                    btn.textContent = isFavorited ? '💝 Favorited' : '💖 Favorite';
+                }
+            }
+
+            async updateStats() {
+                try {
+                    const stats = await this.controller.getUserStats();
+                    
+                    document.getElementById('dailyStreak').textContent = stats.user.dailyStreak || 0;
+                    document.getElementById('jokesViewed').textContent = stats.user.jokesViewed || 0;
+                    document.getElementById('favoritesCount').textContent = stats.user.favoriteJokes?.length || 0;
+                    document.getElementById('achievementsCount').textContent = stats.user.achievements?.length || 0;
+                } catch (error) {
+                    console.warn('Failed to update stats:', error);
+                }
+            }
+
+            showLoading(loading) {
+                this.isLoading = loading;
+                document.querySelector('.joke-card').classList.toggle('loading', loading);
+                
+                if (loading) {
+                    document.getElementById('jokeText').textContent = 'Loading...';
+                }
+            }
+
+            showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            showError(message) {
+                this.showToast(`❌ ${message}`);
+            }
+
+            showAchievement(achievement) {
+                const popup = document.getElementById('achievementPopup');
+                document.getElementById('achievementText').textContent = `Achievement Unlocked: ${achievement}`;
+                popup.classList.add('show');
+                
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 4000);
+            }
+        }
+
+        // Initialize the web app
+        const webApp = new PunPalWebApp();
+        webApp.initialize();
+    </script>
+</body>
+</html>
+
+<!--
+Why don't web developers ever get lost? Because they always know their way around the DOM!
+-->
