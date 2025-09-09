@@ -1,0 +1,385 @@
+openapi: 3.0.3
+info:
+  title: The Joker - Servidor HTTP en Go
+  description: |
+    API completa para el servidor HTTP implementado en Go con todas las variables, métodos e identificadores en español.
+    
+    ## Características
+    - ✅ Nombres en español para todas las variables y métodos
+    - 🌐 API RESTful completa para gestión de usuarios
+    - 📝 Middleware de logging y CORS incorporado
+    - 🛡️ Validación robusta de datos de entrada
+    - ⚡ Configuración optimizada con timeouts
+    - 📊 Endpoint de monitoreo de salud
+    
+    ## Configuración
+    El servidor puede configurarse mediante variables de entorno:
+    - `PUERTO`: Puerto del servidor (default: 8080)
+    - `DIRECCION`: Dirección IP del servidor (default: localhost)
+    - `TIEMPO_ESPERA`: Timeout en segundos (default: 30)
+  version: "1.0.0"
+  contact:
+    name: The Joker Team
+    url: https://github.com/patterson-io/the-joker
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desarrollo local
+  - url: http://localhost:3000
+    description: Servidor alternativo
+
+tags:
+  - name: información
+    description: Endpoints de información general del servidor
+  - name: usuarios
+    description: Gestión de usuarios del sistema
+  - name: monitoreo
+    description: Endpoints de monitoreo y estado del servidor
+
+paths:
+  /:
+    get:
+      tags:
+        - información
+      summary: Información general del servidor
+      description: Devuelve información general del servidor y lista de endpoints disponibles
+      operationId: obtenerInformacionServidor
+      responses:
+        '200':
+          description: Información del servidor obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaInformacion'
+              example:
+                exitoso: true
+                mensaje: "¡Bienvenido al servidor HTTP en español!"
+                datos:
+                  version: "1.0.0"
+                  descripcion: "Servidor HTTP completo con documentación en español"
+                  endpoints_disponibles:
+                    - "/"
+                    - "/usuarios"
+                    - "/usuarios/{id}"
+                    - "/salud"
+
+  /salud:
+    get:
+      tags:
+        - monitoreo
+      summary: Verificación de salud del servidor
+      description: Verifica que el servidor esté funcionando correctamente
+      operationId: verificarSaludServidor
+      responses:
+        '200':
+          description: Servidor funcionando correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaSalud'
+              example:
+                exitoso: true
+                mensaje: "El servidor está funcionando correctamente"
+                datos:
+                  tiempo_servidor: "2024-01-15 14:30:25"
+                  estado: "saludable"
+
+  /usuarios:
+    get:
+      tags:
+        - usuarios
+      summary: Obtener todos los usuarios
+      description: Devuelve una lista de todos los usuarios registrados en el sistema
+      operationId: obtenerTodosLosUsuarios
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaListaUsuarios'
+              example:
+                exitoso: true
+                mensaje: "Se encontraron 2 usuarios"
+                datos:
+                  - id: 1
+                    nombre: "María García"
+                    email: "maria@ejemplo.com"
+                    fecha_creado: "2024-01-15 14:25:10"
+                  - id: 2
+                    nombre: "Carlos López"
+                    email: "carlos@ejemplo.com"
+                    fecha_creado: "2024-01-15 14:28:45"
+
+    post:
+      tags:
+        - usuarios
+      summary: Crear nuevo usuario
+      description: Crea un nuevo usuario en el sistema
+      operationId: crearNuevoUsuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SolicitudCrearUsuario'
+            example:
+              nombre: "Ana Martínez"
+              email: "ana@ejemplo.com"
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaUsuario'
+              example:
+                exitoso: true
+                mensaje: "Usuario creado exitosamente"
+                datos:
+                  id: 3
+                  nombre: "Ana Martínez"
+                  email: "ana@ejemplo.com"
+                  fecha_creado: "2024-01-15 14:35:20"
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaError'
+              example:
+                exitoso: false
+                error: "Nombre y email son campos obligatorios"
+
+  /usuarios/{id}:
+    get:
+      tags:
+        - usuarios
+      summary: Obtener usuario por ID
+      description: Devuelve la información de un usuario específico
+      operationId: obtenerUsuarioPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID único del usuario
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        '200':
+          description: Usuario encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaUsuario'
+              example:
+                exitoso: true
+                mensaje: "Usuario encontrado"
+                datos:
+                  id: 1
+                  nombre: "María García"
+                  email: "maria@ejemplo.com"
+                  fecha_creado: "2024-01-15 14:25:10"
+        '400':
+          description: ID de usuario inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaError'
+              example:
+                exitoso: false
+                error: "ID de usuario inválido"
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaError'
+              example:
+                exitoso: false
+                error: "Usuario no encontrado"
+
+components:
+  schemas:
+    RespuestaBase:
+      type: object
+      required:
+        - exitoso
+        - mensaje
+      properties:
+        exitoso:
+          type: boolean
+          description: Indica si la operación fue exitosa
+        mensaje:
+          type: string
+          description: Mensaje descriptivo del resultado
+        datos:
+          type: object
+          description: Datos adicionales de la respuesta
+        error:
+          type: string
+          description: Mensaje de error (solo presente cuando exitoso es false)
+
+    Usuario:
+      type: object
+      required:
+        - id
+        - nombre
+        - email
+        - fecha_creado
+      properties:
+        id:
+          type: integer
+          description: Identificador único del usuario
+          example: 1
+        nombre:
+          type: string
+          description: Nombre completo del usuario
+          example: "María García"
+        email:
+          type: string
+          format: email
+          description: Dirección de correo electrónico del usuario
+          example: "maria@ejemplo.com"
+        fecha_creado:
+          type: string
+          format: date-time
+          description: Fecha y hora de creación del usuario
+          example: "2024-01-15 14:25:10"
+
+    SolicitudCrearUsuario:
+      type: object
+      required:
+        - nombre
+        - email
+      properties:
+        nombre:
+          type: string
+          description: Nombre completo del usuario
+          minLength: 1
+          maxLength: 100
+          example: "Ana Martínez"
+        email:
+          type: string
+          format: email
+          description: Dirección de correo electrónico del usuario
+          example: "ana@ejemplo.com"
+
+    RespuestaInformacion:
+      allOf:
+        - $ref: '#/components/schemas/RespuestaBase'
+        - type: object
+          properties:
+            datos:
+              type: object
+              properties:
+                version:
+                  type: string
+                  description: Versión del servidor
+                  example: "1.0.0"
+                descripcion:
+                  type: string
+                  description: Descripción del servidor
+                  example: "Servidor HTTP completo con documentación en español"
+                endpoints_disponibles:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista de endpoints disponibles
+                  example: ["/", "/usuarios", "/usuarios/{id}", "/salud"]
+
+    RespuestaSalud:
+      allOf:
+        - $ref: '#/components/schemas/RespuestaBase'
+        - type: object
+          properties:
+            datos:
+              type: object
+              properties:
+                tiempo_servidor:
+                  type: string
+                  format: date-time
+                  description: Tiempo actual del servidor
+                  example: "2024-01-15 14:30:25"
+                estado:
+                  type: string
+                  description: Estado actual del servidor
+                  example: "saludable"
+
+    RespuestaUsuario:
+      allOf:
+        - $ref: '#/components/schemas/RespuestaBase'
+        - type: object
+          properties:
+            datos:
+              $ref: '#/components/schemas/Usuario'
+
+    RespuestaListaUsuarios:
+      allOf:
+        - $ref: '#/components/schemas/RespuestaBase'
+        - type: object
+          properties:
+            datos:
+              type: array
+              items:
+                $ref: '#/components/schemas/Usuario'
+
+    RespuestaError:
+      allOf:
+        - $ref: '#/components/schemas/RespuestaBase'
+        - type: object
+          properties:
+            exitoso:
+              type: boolean
+              enum: [false]
+            error:
+              type: string
+              description: Descripción detallada del error
+
+  examples:
+    UsuarioEjemplo:
+      summary: Usuario de ejemplo
+      value:
+        id: 1
+        nombre: "María García"
+        email: "maria@ejemplo.com"
+        fecha_creado: "2024-01-15 14:25:10"
+
+    CrearUsuarioEjemplo:
+      summary: Crear usuario de ejemplo
+      value:
+        nombre: "Carlos López"
+        email: "carlos@ejemplo.com"
+
+    ErrorValidacion:
+      summary: Error de validación
+      value:
+        exitoso: false
+        error: "Nombre y email son campos obligatorios"
+
+# Información adicional para desarrolladores
+x-desarrollo:
+  comandos:
+    ejecutar: "make ejecutar"
+    pruebas: "make pruebas"
+    construccion: "make construccion"
+    ejemplo: "make ejemplo"
+  
+  variables_entorno:
+    PUERTO: "Puerto del servidor (default: 8080)"
+    DIRECCION: "Dirección IP del servidor (default: localhost)"
+    TIEMPO_ESPERA: "Timeout en segundos (default: 30)"
+  
+  ejemplos_curl:
+    verificar_salud: "curl http://localhost:8080/salud"
+    crear_usuario: |
+      curl -X POST http://localhost:8080/usuarios \
+        -H "Content-Type: application/json" \
+        -d '{"nombre": "Test User", "email": "test@ejemplo.com"}'
+    obtener_usuarios: "curl http://localhost:8080/usuarios"
+    obtener_usuario_por_id: "curl http://localhost:8080/usuarios/1"
